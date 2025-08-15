@@ -29,9 +29,24 @@ jobs:
         node-version: '18'
         cache: 'pnpm'
 
-    - name: Install pnpm
-      run: npm install -g pnpm
-      
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 8 # Use pnpm version 8
+        run_install: false # Do not run install here, we'll do it manually
+
+    - name: Get pnpm store path
+      id: pnpm-cache
+      run: echo "::set-output name=dir::$(pnpm store path)"
+
+    - uses: actions/cache@v4
+      name: Setup pnpm cache
+      with:
+        path: ${{ steps.pnpm-cache.outputs.dir }}
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-
+
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       
@@ -56,5 +71,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
 
