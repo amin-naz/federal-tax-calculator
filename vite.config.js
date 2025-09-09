@@ -1,14 +1,23 @@
+// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
-// https://vite.dev/config/
+// Use the repo base path on CI so assets resolve at
+// https://amin-naz.github.io/federal-tax-calculator/
+const isCI = process.env.GITHUB_ACTIONS === 'true'
+
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+  base: isCI ? '/federal-tax-calculator/' : '/',
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
   },
 })
